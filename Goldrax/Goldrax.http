@@ -1,0 +1,6 @@
+@Goldrax_HostAddress = http://localhost:5199
+
+GET {{Goldrax_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
