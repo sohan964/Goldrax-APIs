@@ -17,6 +17,7 @@ namespace Goldrax.Repositories.Authentication.MailServices
         public void SendEmail (Message message)
         {
             var emailMessage = CreateEmailMessage(message);
+            Send(emailMessage);
         }
 
         

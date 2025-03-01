@@ -1,5 +1,6 @@
 using Goldrax.Data;
 using Goldrax.Models.Authentication;
+using Goldrax.Models.Authentication.MailServiceModels;
 using Goldrax.Repositories.Authentication;
 using Goldrax.Repositories.Authentication.MailServices;
 using Microsoft.AspNetCore.Identity;
@@ -34,7 +35,8 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 //add email configs
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
-    .Get<EmailCon >
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

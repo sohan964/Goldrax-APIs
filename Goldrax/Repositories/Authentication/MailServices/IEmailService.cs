@@ -4,6 +4,6 @@ namespace Goldrax.Repositories.Authentication.MailServices
 {
     public interface IEmailService
     {
-        //void SendEmail(Message message);
+        void SendEmail(Message message);
     }
 }
