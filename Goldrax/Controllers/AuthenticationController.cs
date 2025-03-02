@@ -55,5 +55,21 @@ namespace Goldrax.Controllers
             }
             return Unauthorized();
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] SignIn signIn)
+        {
+            var result = await _authenticationRepository.LoginAsync(signIn);
+            return Ok(result);
+        }
+
+        [HttpPost("login-2FA")]
+        public async Task<IActionResult> LoginWithOTP(string code, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound("the user not found");
+            var result = await _authenticationRepository.LoginWithOTPAsync(code, user);
+            return Ok(result);
+        }
     }
 }
