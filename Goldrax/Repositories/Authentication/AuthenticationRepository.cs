@@ -3,6 +3,7 @@ using Goldrax.Models.Authentication.MailServiceModels;
 using Goldrax.Repositories.Authentication.MailServices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -142,6 +143,18 @@ namespace Goldrax.Repositories.Authentication
             }
             return new { status = 401, message = "invalid code" };
         }
+
+        //forget password
+        public async Task<object> ForgotPasswordAsync(ApplicationUser user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var message = new Message(new string[] { user.Email! }, "Token To Reset Password",token);
+            _emailService.SendEmail(message);
+            return new { status = 200, message = $"Reset password token send to {user.Email}" };
+
+        }
+
 
 
         //Jwt Token Generate

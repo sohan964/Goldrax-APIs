@@ -7,5 +7,6 @@ namespace Goldrax.Repositories.Authentication
         Task<object> SignUpAsync(SignUp signUp);
         Task<object> LoginAsync(SignIn signIn);
         Task<object> LoginWithOTPAsync(string code, ApplicationUser user);
+        Task<object> ForgotPasswordAsync(ApplicationUser user);
     }
 }

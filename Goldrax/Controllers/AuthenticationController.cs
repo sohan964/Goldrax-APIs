@@ -2,9 +2,11 @@
 using Goldrax.Models.Authentication.MailServiceModels;
 using Goldrax.Repositories.Authentication;
 using Goldrax.Repositories.Authentication.MailServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Goldrax.Controllers
 {
@@ -71,5 +73,35 @@ namespace Goldrax.Controllers
             var result = await _authenticationRepository.LoginWithOTPAsync(code, user);
             return Ok(result);
         }
+
+        [HttpPost("forget-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([Required] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound("user not found");
+            var result = await _authenticationRepository.ForgotPasswordAsync(user);
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email!);
+            if (user == null) return NotFound("user not found");
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token!, resetPassword.Password!);
+            if(!resetPassResult.Succeeded)
+            {
+                foreach(var error in resetPassResult.Errors)
+                {
+                    //modelState builtin here
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
+            return Ok(resetPassResult);
+
+        }
+
     }
 }
