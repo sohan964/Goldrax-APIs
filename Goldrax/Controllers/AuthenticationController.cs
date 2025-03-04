@@ -74,6 +74,26 @@ namespace Goldrax.Controllers
             return Ok(result);
         }
 
+        //get current user
+        [HttpGet("user")]
+        public async Task<IActionResult> CurrentUser()
+        {
+            var email = HttpContext.User?.Claims.First().Value;
+            if(email == null) return Unauthorized("Not a Valid Token");
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound("user not found");
+            var role = await _userManager.GetRolesAsync(user);
+            return Ok(new { 
+                user.FullName,
+                user.Email,
+                user.Id,
+                user.EmailConfirmed,
+                user.TwoFactorEnabled,
+                role
+            
+            });
+        }
+
         [HttpPost("forget-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([Required] string email)
