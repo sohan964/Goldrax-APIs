@@ -1,11 +1,13 @@
 ﻿using Goldrax.Models.Authentication;
 using Goldrax.Models.Authentication.MailServiceModels;
+using Goldrax.Models.Components;
 using Goldrax.Repositories.Authentication;
 using Goldrax.Repositories.Authentication.MailServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
 
 namespace Goldrax.Controllers
@@ -30,15 +32,35 @@ namespace Goldrax.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> CreateUser([FromBody] SignUp signUp)
+        public async Task<IActionResult> CreateUser([FromBody] SignUp? signUp)
         {
-            var Result = await _authenticationRepository.SignUpAsync(signUp);
-            var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", Result, Request.Scheme);
-            var message = new Message(new string[] { signUp.Email! }, "Confirmation email link", confirmationLink!);
-            
-            _emailService.SendEmail(message);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new Response<object>(false, "Validation Failed", ModelState));
+            }
+            try
+            {
+                
 
-            return Ok(Result);
+                var Result = await _authenticationRepository.SignUpAsync(signUp);
+
+                if(Result.Succeeded == false)
+                {
+                    return BadRequest(Result);
+                }
+
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", Result, Request.Scheme);
+                var message = new Message(new string[] { signUp.Email! }, "Confirmation email link", confirmationLink!);
+
+                _emailService.SendEmail(message);
+                
+                return Ok(new Response<object>(Result.Succeeded, Result.Message!));
+            }
+            catch (Exception ex)
+            {
+
+                return Unauthorized(new Response<object>(false, ex.Message, ex.Data));
+            }
         }
 
         [HttpGet("ConfirmEmail")]

@@ -1,5 +1,6 @@
 ﻿using Goldrax.Models.Authentication;
 using Goldrax.Models.Authentication.MailServiceModels;
+using Goldrax.Models.Components;
 using Goldrax.Repositories.Authentication.MailServices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +31,7 @@ namespace Goldrax.Repositories.Authentication
             _configuration = configuration;
         }
 
-        public async Task<object> SignUpAsync(SignUp signUp)
+        public async Task<Response<object>> SignUpAsync(SignUp signUp)
         {
             var user = new ApplicationUser()
             { 
@@ -54,15 +55,10 @@ namespace Goldrax.Repositories.Authentication
 
             if (result.Succeeded)
             {
-                return new
-                {
-                    token,
-                    email = user.Email
-
-                };
+                return new Response<object>(true, "Check your Email to verify account", new {token,email=user.Email});
             }
 
-            return result;
+            return new Response<object>(false, "SignUp failed", result.Errors);
 
 
         }
@@ -72,7 +68,7 @@ namespace Goldrax.Repositories.Authentication
         {
             var user = await _userManager.FindByEmailAsync(signIn.Email!);
             if (user == null) return new { status = 404, message = "The User Not Found" };
-            if(!await _userManager.CheckPasswordAsync(user, signIn.Password))
+            if(!await _userManager.CheckPasswordAsync(user, signIn.Password!))
             {
                 return new { status = 500, message = "Wrong Password" };
             }
