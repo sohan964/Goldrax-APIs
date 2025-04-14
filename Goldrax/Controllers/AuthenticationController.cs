@@ -49,8 +49,9 @@ namespace Goldrax.Controllers
                     return BadRequest(Result);
                 }
 
-                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", Result, Request.Scheme);
-                var message = new Message(new string[] { signUp.Email! }, "Confirmation email link", confirmationLink!);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", Result.Data, Request.Scheme);
+                var message = new Message(new string[] { signUp.Email! }, "Confirmation email link",
+                    "<h1>Welcome!</h1><p>Please confirm your email by clicking <a href='" + confirmationLink + "'>here</a>.</p>");
 
                 _emailService.SendEmail(message);
                 
@@ -84,16 +85,24 @@ namespace Goldrax.Controllers
         public async Task<IActionResult> Login([FromBody] SignIn signIn)
         {
             var result = await _authenticationRepository.LoginAsync(signIn);
-            return Ok(result);
+            if(result.Succeeded)
+            {
+               return  Ok(result);
+            }
+            return Unauthorized(result);
         }
 
         [HttpPost("login-2FA")]
         public async Task<IActionResult> LoginWithOTP(string code, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) return NotFound("the user not found");
+            if (user == null) return NotFound(new Response<object>(false,"the user not found"));
             var result = await _authenticationRepository.LoginWithOTPAsync(code, user);
-            return Ok(result);
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+            return Unauthorized(result);
         }
 
         //get current user
@@ -105,7 +114,10 @@ namespace Goldrax.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return NotFound("user not found");
             var role = await _userManager.GetRolesAsync(user);
-            return Ok(new { 
+            return Ok(
+
+                new Response<object>(true, "The current user",
+                new { 
                 user.FullName,
                 user.Email,
                 user.Id,
@@ -113,7 +125,7 @@ namespace Goldrax.Controllers
                 user.TwoFactorEnabled,
                 role
             
-            });
+            }));
         }
 
         [HttpPost("forget-password")]
@@ -123,14 +135,15 @@ namespace Goldrax.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return NotFound("user not found");
             var result = await _authenticationRepository.ForgotPasswordAsync(user);
-            return Ok(result);
+            if(result.Succeeded) { return Ok(result); }
+            return BadRequest(result);
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
         {
             var user = await _userManager.FindByEmailAsync(resetPassword.Email!);
-            if (user == null) return NotFound("user not found");
+            if (user == null) return NotFound( new Response<object>( false,"user not found"));
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token!, resetPassword.Password!);
             if(!resetPassResult.Succeeded)
             {
@@ -139,9 +152,9 @@ namespace Goldrax.Controllers
                     //modelState builtin here
                     ModelState.AddModelError(error.Code, error.Description);
                 }
-                return BadRequest(ModelState);
+                return BadRequest(new Response<object>(false, "Fatal Error", ModelState));
             }
-            return Ok(resetPassResult);
+            return Ok(new Response<object>(resetPassResult.Succeeded, "Password Reset successed", resetPassResult));
 
         }
 

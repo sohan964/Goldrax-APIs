@@ -27,10 +27,16 @@ namespace Goldrax.Repositories.Authentication.MailServices
             emailMessage.From.Add(new MailboxAddress("email", _emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text)
+            //emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text)
+            //{
+            //    Text = message.Content
+            //};
+            var bodyBuilder = new BodyBuilder
             {
-                Text = message.Content
+                HtmlBody = message.Content,
             };
+
+            emailMessage.Body = bodyBuilder.ToMessageBody();
             return emailMessage;
         }
 

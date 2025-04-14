@@ -41,7 +41,7 @@ namespace Goldrax.Repositories.Authentication
                 LastUpdatedAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                
+                TwoFactorEnabled = true,
             };
 
             var result = await _userManager.CreateAsync(user, signUp.Password);
@@ -64,22 +64,22 @@ namespace Goldrax.Repositories.Authentication
         }
 
         //login
-        public async Task<object> LoginAsync( SignIn signIn)
+        public async Task<Response<object>> LoginAsync( SignIn signIn)
         {
             var user = await _userManager.FindByEmailAsync(signIn.Email!);
-            if (user == null) return new { status = 404, message = "The User Not Found" };
-            if(!await _userManager.CheckPasswordAsync(user, signIn.Password!))
+            if (user == null) return new Response<object>(false, "User not found");
+            if (!await _userManager.CheckPasswordAsync(user, signIn.Password!))
             {
-                return new { status = 500, message = "Wrong Password" };
+                return new Response<object>( false, "Wrong Password" );
             }
             if (user.TwoFactorEnabled)
             {
                 await _signInManager.SignOutAsync();
                 await _signInManager.PasswordSignInAsync(user, signIn.Password, false, true);
                 var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
-                var otpMessage = new Message(new string[] { user.Email! }, "OTP Confirmation", token);
+                var otpMessage = new Message(new string[] { user.Email! }, "OTP Confirmation", $"<p>{token}</p>");
                 _emailService.SendEmail(otpMessage);
-                return new {status= 200, message= $"OTP send to {user.Email}" };
+                return new Response<object>( true, $"OTP send to {user.Email}" );
             }
 
             var authClaims = new List<Claim>
@@ -98,18 +98,22 @@ namespace Goldrax.Repositories.Authentication
             //GetToken private generate at the bottom
             var jwtToken = GetToken(authClaims);
 
-            return new
-            {
-                status = 200,
-                token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                expiration = jwtToken.ValidTo
-            };
+            return new Response<object>(
+            
+                true,
+                "Login Success",
+                new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                    expiration = jwtToken.ValidTo
+                }
+            );
 
 
         }
 
         //login-2FA
-        public async Task<object> LoginWithOTPAsync(string code, ApplicationUser user)
+        public async Task<Response<object>> LoginWithOTPAsync(string code, ApplicationUser user)
         {
             var signIn = await _signInManager.TwoFactorSignInAsync("Email", code, false, false);
             if (signIn.Succeeded)
@@ -130,24 +134,27 @@ namespace Goldrax.Repositories.Authentication
                 //GetToken private generate at the bottom
                 var jwtToken = GetToken(authClaims);
 
-                return new
-                {
-                    status = 200,
-                    token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                    expiration = jwtToken.ValidTo
-                };
+                return new Response<object>(
+                    true,
+                    "Login Success",
+                    new {
+                        token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                        expiration = jwtToken.ValidTo
+                    }
+                );
             }
-            return new { status = 401, message = "invalid code" };
+            return new Response<object> ( false, "invalid code" );
         }
 
         //forget password
-        public async Task<object> ForgotPasswordAsync(ApplicationUser user)
+        public async Task<Response<object>> ForgotPasswordAsync(ApplicationUser user)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var message = new Message(new string[] { user.Email! }, "Token To Reset Password",token);
+            if (token == null) new Response<object>(false, $"Fail to forget Password {user.Email}");
+            var message = new Message(new string[] { user.Email! }, "Token To Reset Password",$"<p>{token}</p>");
             _emailService.SendEmail(message);
-            return new { status = 200, message = $"Reset password token send to {user.Email}" };
+            return new Response<object> ( true, $"Reset password token send to {user.Email}" );
 
         }
 

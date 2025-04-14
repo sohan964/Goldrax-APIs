@@ -6,8 +6,8 @@ namespace Goldrax.Repositories.Authentication
     public interface IAuthenticationRepository
     {
         Task<Response<object>> SignUpAsync(SignUp signUp);
-        Task<object> LoginAsync(SignIn signIn);
-        Task<object> LoginWithOTPAsync(string code, ApplicationUser user);
-        Task<object> ForgotPasswordAsync(ApplicationUser user);
+        Task<Response<object>> LoginAsync(SignIn signIn);
+        Task<Response<object>> LoginWithOTPAsync(string code, ApplicationUser user);
+        Task<Response<object>> ForgotPasswordAsync(ApplicationUser user);
     }
 }
