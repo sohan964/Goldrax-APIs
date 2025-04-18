@@ -152,7 +152,31 @@ namespace Goldrax.Repositories.Authentication
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             if (token == null) new Response<object>(false, $"Fail to forget Password {user.Email}");
-            var message = new Message(new string[] { user.Email! }, "Token To Reset Password",$"<p>{token}</p>");
+            //var message = new Message(new string[] { user.Email! }, "Token To Reset Password",$"<p>{token}</p>");
+
+            var htmlContent = $@"
+            <html>
+                <body>
+                    <h2>Password Reset Token</h2>
+                    <p id='token' style='padding:10px; background-color:#f2f2f2; border:1px solid #ccc;'>{token}</p>
+                    <button onclick='copyToken()' style='padding:8px 16px; background-color:#4CAF50; color:white; border:none; cursor:pointer;'>Copy Token</button>
+
+                    <script>
+                        function copyToken() {{
+                            var copyText = document.getElementById('token').innerText;
+                            navigator.clipboard.writeText(copyText).then(function() {{
+                                alert('Token copied to clipboard!');
+                            }}, function(err) {{
+                                alert('Failed to copy token');
+                            }});
+                        }}
+                    </script>
+                </body>
+            </html>";
+
+            var message = new Message(new string[] { user.Email! }, "Token To Reset Password", htmlContent);
+
+
             _emailService.SendEmail(message);
             return new Response<object> ( true, $"Reset password token send to {user.Email}" );
 

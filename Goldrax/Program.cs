@@ -3,6 +3,7 @@ using Goldrax.Models.Authentication;
 using Goldrax.Models.Authentication.MailServiceModels;
 using Goldrax.Repositories.Authentication;
 using Goldrax.Repositories.Authentication.MailServices;
+using Goldrax.Repositories.ProductRepositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,8 @@ builder.Services.AddAuthentication(options =>
 //Dependency Injecktions
 builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+//Products && Categories
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
 
 
 //add email configs
@@ -73,7 +76,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
