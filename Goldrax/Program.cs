@@ -3,6 +3,7 @@ using Goldrax.Models.Authentication;
 using Goldrax.Models.Authentication.MailServiceModels;
 using Goldrax.Repositories.Authentication;
 using Goldrax.Repositories.Authentication.MailServices;
+using Goldrax.Repositories.CategoryRepositories;
 using Goldrax.Repositories.ProductRepositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -57,6 +58,7 @@ builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepositor
 builder.Services.AddTransient<IEmailService, EmailService>();
 //Products && Categories
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 
 
 //add email configs

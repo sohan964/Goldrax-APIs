@@ -15,69 +15,24 @@ namespace Goldrax.Repositories.ProductRepositories
             _context = context;
         }
 
-        //public async Task<Response<List<ProductModel>>> GetProductsAsync(
-        //    stirng?)
-        //{
-        //    var allProducts = await _context.Products.Select(x => new ProductModel
-        //    {
-        //        Id = x.Id,
-        //        Name = x.Name,
-        //        Description = x.Description,
-        //        Price = x.Price,
-        //        Brand = x.Brand,
-        //        Category = new
-        //        {
-        //            x.CategoryId,
-        //            x.Category.Name,
-        //        },
-
-        //        Size = x.Size,
-        //        Color = x.Color,
-        //        Discount = x.Discount,
-        //        Subcategory = new
-        //        {
-        //            x.SubcategoryId,
-        //            x.Subcategory.Name,
-        //        },
-
-        //        Gender = x.Gender,
-        //        Image = x.Image,
-        //        Quantity = x.Quantity,
-        //        Seller = new
-        //        {
-        //            x.SellerId,
-        //            x.Seller.FullName,
-        //            x.Seller.Email,
-        //        }
-        //    }).ToListAsync();
-        //    //return allProducts;
-        //    //allProducts.Clear();
-        //    if (allProducts.Count == 0)
-        //    {
-        //        return new Response<List<ProductModel>>(false, "Products Not found");
-        //    }
-        //    return new Response<List<ProductModel>>(true, "All Products", allProducts);
-        //}
-
-
         //search products
         public async Task<Response<List<ProductModel>>> SearchProductsAsync(
-    string? query,
-    string? category,
-    int? categoryId,
-    string? color,
-    string? size,
-    string? gender,
-    decimal? minPrice,
-    decimal? maxPrice,
-    int page = 1,
-    int pageSize = 10)
+            string? query,
+            string? category,
+            int? categoryId,
+            string? color,
+            string? size,
+            string? gender,
+            decimal? minPrice,
+            decimal? maxPrice,
+            int page = 1,
+            int pageSize = 10)
         {
             var productsQuery = _context.Products
                 .Where(p =>
                     (string.IsNullOrEmpty(query) || p.Name.Contains(query)) &&
                     (string.IsNullOrEmpty(category) || p.Category.Name == category) &&
-                    (string.IsNullOrEmpty(category) || p.Category.Id == categoryId) &&
+                    (!categoryId.HasValue || p.CategoryId == categoryId.Value) &&
                     (string.IsNullOrEmpty(color) || p.Color == color) &&
                     (string.IsNullOrEmpty(size) || p.Size == size) &&
                     (string.IsNullOrEmpty(gender) || p.Gender == gender) &&
@@ -129,7 +84,7 @@ namespace Goldrax.Repositories.ProductRepositories
                 return new Response<List<ProductModel>>(false, "No matching products found.");
             }
 
-            return new Response<List<ProductModel>>(true, "Filtered Products", filteredProducts);
+            return new Response<List<ProductModel>>(true, $"{totalCount} Filtered Products Founds", filteredProducts);
         }
 
 
