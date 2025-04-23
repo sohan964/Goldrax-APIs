@@ -18,7 +18,7 @@ namespace Goldrax.Repositories.ProductRepositories
             decimal? minPrice,
             decimal? maxPrice,
             int page = 1,
-            int pageSize = 10);
+            int pageSize = 5);
         Task<Response<ProductModel>> GetProductByIdAsync(int id);
         Task<Response<object>> addProductAsync(ProductModel product);
         Task<Response<object>> UpdateProductAsync(int id, ProductModel product);

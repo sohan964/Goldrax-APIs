@@ -26,7 +26,7 @@ namespace Goldrax.Repositories.ProductRepositories
             decimal? minPrice,
             decimal? maxPrice,
             int page = 1,
-            int pageSize = 10)
+            int pageSize = 5)
         {
             var productsQuery = _context.Products
                 .Where(p =>
@@ -84,7 +84,9 @@ namespace Goldrax.Repositories.ProductRepositories
                 return new Response<List<ProductModel>>(false, "No matching products found.");
             }
 
-            return new Response<List<ProductModel>>(true, $"{totalCount} Filtered Products Founds", filteredProducts);
+            return new Response<List<ProductModel>>(true, $"{totalCount} Filtered Products Founds", filteredProducts) {
+                TotalCount = totalCount
+            };
         }
 
 
@@ -126,7 +128,7 @@ namespace Goldrax.Repositories.ProductRepositories
             {
                 return new Response<ProductModel>(false, "Product Not found");
             }
-            return new Response<ProductModel>(true, "Product Not found", product);
+            return new Response<ProductModel>(true, "Product found", product);
         }
 
         //addnewProduct

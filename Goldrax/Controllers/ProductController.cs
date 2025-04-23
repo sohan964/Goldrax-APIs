@@ -39,7 +39,7 @@ namespace Goldrax.Controllers
             [FromQuery] decimal? minPrice,
             [FromQuery] decimal? maxPrice,
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 5)
         {
             var res = await _productRepository.SearchProductsAsync(
                 query, category, categoryId, color, size, gender, minPrice, maxPrice, page, pageSize);
