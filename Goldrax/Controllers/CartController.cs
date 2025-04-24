@@ -40,5 +40,31 @@ namespace Goldrax.Controllers
             }
             return Ok(result);
         }
+
+        [HttpDelete("deleteCart/{id}")]
+        public async Task<IActionResult> DeleteById([FromRoute] int id)
+        {
+            var result = await _cartRepository.DeleteByIdAsync(id);
+            if (!result.Succeeded) return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpDelete("deleteByUserId/{userId}")]
+        public async Task<IActionResult> DeleteUserCarts([FromRoute] string userId)
+        {
+            var result = await _cartRepository.DeleteByUserIdAsync(userId);
+            if (!result.Succeeded) return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpGet("useCarts/{userId}")]
+        public async Task<IActionResult> GetCartByUser([FromRoute] string userId)
+        {
+            var result = await _cartRepository.GetByUserIdAsync(userId);
+            if (!result.Succeeded) return NotFound(result);
+            return Ok(result);
+        }
     }
+
+    
 }
