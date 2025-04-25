@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,10 +67,10 @@ builder.Services.AddTransient<ICartRepository, CartRepository>();
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
     .Get<EmailConfiguration>();
-builder.Services.AddSingleton(emailConfig);
+builder?.Services?.AddSingleton(emailConfig!);
 
 //CORS
-builder.Services.AddCors(options =>
+builder?.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
@@ -79,12 +80,15 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers().AddNewtonsoftJson();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//stripe configuration
+StripeConfiguration.ApiKey = "sk_test_51OlWFUDfRJUn5qMUwhdPj3mt7IueKqmcDeXpVxH3fwHsFpLcjqwnHR88dOTMY2jDSK4BZcJxVeFCFMWYHpXfVzvL009UCxAO7t";
 
-var app = builder.Build();
+builder?.Services.AddControllers().AddNewtonsoftJson();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder?.Services.AddEndpointsApiExplorer();
+builder?.Services.AddSwaggerGen();
+
+var app = builder?.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -57,7 +57,7 @@ namespace Goldrax.Controllers
             return Ok(result);
         }
 
-        [HttpGet("useCarts/{userId}")]
+        [HttpGet("userCarts/{userId}")]
         public async Task<IActionResult> GetCartByUser([FromRoute] string userId)
         {
             var result = await _cartRepository.GetByUserIdAsync(userId);
