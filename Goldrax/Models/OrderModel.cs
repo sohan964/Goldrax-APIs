@@ -1,16 +1,15 @@
-﻿using Goldrax.Models.Authentication;
+﻿using Goldrax.Data;
+using Goldrax.Models.Authentication;
 
-namespace Goldrax.Data
+namespace Goldrax.Models
 {
-    public class Order
+    public class OrderModel
     {
-        public int Id { get; set; }
-
         public string UserId { get; set; }
-        public ApplicationUser? User { get; set; }
+        
 
-        public DateTime OrderDate { get; set; } = DateTime.Now;
-        public DateTime DeliveryDate {  get; set; } = DateTime.Now.AddDays(5);
+        
+        
         public string ShippingAddress { get; set; }
 
         public string DeliveryType { get; set; } // Inside/Outside Dhaka
@@ -26,8 +25,6 @@ namespace Goldrax.Data
 
         public string OrderStatus { get; set; } = "Processing";
 
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public List<OrderItemModel> OrderItems { get; set; }
     }
-
-
 }

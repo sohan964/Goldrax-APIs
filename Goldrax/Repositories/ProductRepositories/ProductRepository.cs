@@ -161,7 +161,7 @@ namespace Goldrax.Repositories.ProductRepositories
                 return new Response<object>(false, "Failed to add new product");
             }
 
-            return new Response<object>(true, "Product added successfully");
+            return new Response<object>(true, "Product added successfully",addNew.Id);
         }
 
         //updateProduct

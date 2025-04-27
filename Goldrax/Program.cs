@@ -5,6 +5,7 @@ using Goldrax.Repositories.Authentication;
 using Goldrax.Repositories.Authentication.MailServices;
 using Goldrax.Repositories.CartRepositories;
 using Goldrax.Repositories.CategoryRepositories;
+using Goldrax.Repositories.OrderRepositories;
 using Goldrax.Repositories.ProductRepositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -62,6 +63,7 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 
 //add email configs
 var emailConfig = builder.Configuration
@@ -83,7 +85,10 @@ builder?.Services.AddCors(options =>
 //stripe configuration
 StripeConfiguration.ApiKey = "sk_test_51OlWFUDfRJUn5qMUwhdPj3mt7IueKqmcDeXpVxH3fwHsFpLcjqwnHR88dOTMY2jDSK4BZcJxVeFCFMWYHpXfVzvL009UCxAO7t";
 
-builder?.Services.AddControllers().AddNewtonsoftJson();
+builder?.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder?.Services.AddEndpointsApiExplorer();
 builder?.Services.AddSwaggerGen();

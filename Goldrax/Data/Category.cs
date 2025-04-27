@@ -15,7 +15,7 @@ namespace Goldrax.Data
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
-        public ICollection<Subcategory> Subcategories { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Subcategory>? Subcategories { get; set; }
+        public ICollection<Product>? Products { get; set; }
     }
 }
