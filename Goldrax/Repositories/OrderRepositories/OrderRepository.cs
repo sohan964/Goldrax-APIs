@@ -34,7 +34,7 @@ namespace Goldrax.Repositories.OrderRepositories
             await _context.SaveChangesAsync();
             var newOrderItems = new List<OrderItem>();
             
-            order.OrderItems.ForEach(item =>
+            order?.OrderItems?.ForEach(item =>
             {
                 var newItem = new OrderItem()
                 {
@@ -46,8 +46,10 @@ namespace Goldrax.Repositories.OrderRepositories
                 newOrderItems.Add(newItem);
             });
 
+            Console.WriteLine(newOrderItems);
+
             await _context.OrderItems.AddRangeAsync(newOrderItems);
-            var res =await _context.SaveChangesAsync();
+            var res = await _context.SaveChangesAsync();
             if(res == 0)
             {
                 return new Response<object>(false, "hoynai");

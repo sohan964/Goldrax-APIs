@@ -123,7 +123,11 @@ namespace Goldrax.Controllers
                 user.Id,
                 user.EmailConfirmed,
                 user.TwoFactorEnabled,
-                role
+                role,
+                user.Address,
+                user.City,
+                user.Country,
+                user.PostalCode,
             
             }));
         }

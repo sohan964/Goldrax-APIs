@@ -41,7 +41,8 @@ namespace Goldrax.Repositories.Authentication
                 LastUpdatedAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                TwoFactorEnabled = true,
+                TwoFactorEnabled = false,
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, signUp.Password);

@@ -33,7 +33,7 @@ namespace Goldrax.Controllers
            return Ok(new {clientSecret = paymentIntent.ClientSecret});
         }
 
-        [HttpPost("Place")]
+        [HttpPost("place")]
         public async Task<IActionResult> PlaceOrder([FromBody] OrderModel order)
         {
             var result = await _orderRepository.PlaceOrderAsync(order);
