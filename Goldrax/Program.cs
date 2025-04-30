@@ -83,7 +83,7 @@ builder?.Services.AddCors(options =>
 });
 
 //stripe configuration
-StripeConfiguration.ApiKey = "sk_test_51OlWFUDfRJUn5qMUwhdPj3mt7IueKqmcDeXpVxH3fwHsFpLcjqwnHR88dOTMY2jDSK4BZcJxVeFCFMWYHpXfVzvL009UCxAO7t";
+
 
 builder?.Services.AddControllers().AddNewtonsoftJson(options =>
 {
