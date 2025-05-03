@@ -37,6 +37,15 @@ namespace Goldrax.Controllers
         public async Task<IActionResult> PlaceOrder([FromBody] OrderModel order)
         {
             var result = await _orderRepository.PlaceOrderAsync(order);
+            if(!result.Succeeded) return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpGet("myorders/{userId}")]
+        public async Task<IActionResult> GetOrderByUserId([FromRoute]string userId)
+        {
+            var result = await _orderRepository.GetOrdersByUserIdAsync(userId);
+            if (!result.Succeeded) return BadRequest(result);
             return Ok(result);
         }
     }
