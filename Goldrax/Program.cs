@@ -84,9 +84,6 @@ builder?.Services.AddCors(options =>
     });
 });
 
-//stripe configuration
-
-
 builder?.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
