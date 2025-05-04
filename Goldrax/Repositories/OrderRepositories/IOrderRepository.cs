@@ -8,5 +8,7 @@ namespace Goldrax.Repositories.OrderRepositories
     {
         Task<Response<object>> PlaceOrderAsync(OrderModel order);
         Task<Response<List<Order>>> GetOrdersByUserIdAsync(string userId);
+        Task<Response<List<Order>>> GetAllOrderAsync(string orderStatus);
+        Task<Response<object>> ChangeOrderStatusAsync(int orderId, string orderStatus);
     }
 }

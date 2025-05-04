@@ -78,6 +78,7 @@ namespace Goldrax.Repositories.OrderRepositories
 
         public async Task<Response<List<Order>>> GetOrdersByUserIdAsync(string userId)
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             var orders = await _context.Orders?.Where(x => x.UserId == userId).Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
                 .Select( order => new Order
                 {
@@ -87,6 +88,7 @@ namespace Goldrax.Repositories.OrderRepositories
                     OrderStatus = order.OrderStatus,
                     PaymentStatus = order.PaymentStatus,
                     TotalAmount = order.TotalAmount,
+                    ShippingAddress = order.ShippingAddress,
                     OrderItems =  order.OrderItems.Select(item => new OrderItem
                     {
                         Id = item.Id,
@@ -103,6 +105,7 @@ namespace Goldrax.Repositories.OrderRepositories
                     }).ToList()
                 })
                 .ToListAsync();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             if (orders == null || orders?.Count == 0)
                 return new Response<List<Order>>(false, "Orders not found");
@@ -117,6 +120,7 @@ namespace Goldrax.Repositories.OrderRepositories
 
             if(orderStatus == "Completed")
             {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 var completedOrders = await _context.Orders?.Where(x => x.OrderStatus == orderStatus).Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
                 .Select(order => new Order
                 {
@@ -126,6 +130,7 @@ namespace Goldrax.Repositories.OrderRepositories
                     OrderStatus = order.OrderStatus,
                     PaymentStatus = order.PaymentStatus,
                     TotalAmount = order.TotalAmount,
+                    ShippingAddress = order.ShippingAddress,
                     OrderItems = order.OrderItems.Select(item => new OrderItem
                     {
                         Id = item.Id,
@@ -142,10 +147,13 @@ namespace Goldrax.Repositories.OrderRepositories
                     }).ToList()
                 })
                 .ToListAsync();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
 
                 return new Response<List<Order>>(true, "All completed orders", completedOrders);
             }
-            var orders = await _context.Orders?.Where(x => x.OrderStatus != orderStatus).Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            var orders = await _context.Orders?.Where(x => x.OrderStatus != "Completed").Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
                 .Select(order => new Order
                 {
                     Id = order.Id,
@@ -154,6 +162,7 @@ namespace Goldrax.Repositories.OrderRepositories
                     OrderStatus = order.OrderStatus,
                     PaymentStatus = order.PaymentStatus,
                     TotalAmount = order.TotalAmount,
+                    ShippingAddress = order.ShippingAddress,
                     OrderItems = order.OrderItems.Select(item => new OrderItem
                     {
                         Id = item.Id,
@@ -170,11 +179,28 @@ namespace Goldrax.Repositories.OrderRepositories
                     }).ToList()
                 })
                 .ToListAsync();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+            if (orders ==  null) return new Response<List<Order>>(false, "Orders not found");
 
             return new Response<List<Order>>(true, "All Current orders", orders);
 
 
         }
+
+        public async Task<Response<object>> ChangeOrderStatusAsync(int orderId, string orderStatus)
+        {
+            var exOrder = await _context.Orders.FindAsync(orderId);
+            if (exOrder == null) return new Response<object>(false, "order not found");
+            exOrder.OrderStatus = orderStatus;
+            var res = await _context.SaveChangesAsync();
+            if (res == 0) return new Response<object>(false, "Fail to Change");
+            return new Response<object>(true, "Order status change");
+
+            
+        }
+
+
 
 
     }

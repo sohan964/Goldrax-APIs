@@ -1,3 +1,4 @@
+using DotEnv.Core;
 using Goldrax.Data;
 using Goldrax.Models.Authentication;
 using Goldrax.Models.Authentication.MailServiceModels;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Stripe;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +94,9 @@ builder?.Services.AddControllers().AddNewtonsoftJson(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder?.Services.AddEndpointsApiExplorer();
 builder?.Services.AddSwaggerGen();
+new EnvLoader().Load();
+
+StripeConfiguration.ApiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET");
 
 var app = builder?.Build();
 

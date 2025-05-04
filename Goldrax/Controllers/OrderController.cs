@@ -48,5 +48,21 @@ namespace Goldrax.Controllers
             if (!result.Succeeded) return BadRequest(result);
             return Ok(result);
         }
+
+        [HttpGet("allorders/{orderStatus}")]
+        public async Task<IActionResult> GetAllOrders([FromRoute] string orderStatus)
+        {
+            var result  = await _orderRepository.GetAllOrderAsync(orderStatus);
+            if (!result.Succeeded) return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpPatch("changestatus/{orderId}/{newStatus}")]
+        public async Task<IActionResult> OrderStatusChange(int orderId, string newStatus)
+        {
+            var result = await _orderRepository.ChangeOrderStatusAsync(orderId, newStatus);
+            if (!result.Succeeded) return BadRequest(newStatus);
+            return Ok(result);
+        }
     }
 }

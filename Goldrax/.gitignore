@@ -1,0 +1,23 @@
+﻿# .NET build results
+bin/
+obj/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider/VS Code settings
+.idea/
+.vscode/
+
+# Environment and secrets
+.env
+secrets.json
+
+# Logs
+*.log
+
+# Publish output
+publish/
