@@ -128,6 +128,7 @@ namespace Goldrax.Controllers
                 user.City,
                 user.Country,
                 user.PostalCode,
+                user.PhoneNumber,
             
             }));
         }
@@ -160,6 +161,14 @@ namespace Goldrax.Controllers
             }
             return Ok(new Response<object>(resetPassResult.Succeeded, "Password Reset successed", resetPassResult));
 
+        }
+
+        [HttpPut("updateuser")]
+        public async Task<IActionResult> UpdateUser([FromBody] ApplicationUser user)
+        {
+            var result = await _authenticationRepository.UpdateUserAsync(user);
+            if (!result.Succeeded) { return BadRequest(result); }
+            return Ok(result);
         }
 
     }

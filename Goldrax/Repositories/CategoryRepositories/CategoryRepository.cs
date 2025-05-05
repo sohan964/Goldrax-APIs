@@ -15,10 +15,15 @@ namespace Goldrax.Repositories.CategoryRepositories
 
         public async Task<Response<List<Category>>> GetCategoriesAsync()
         {
-            var categories = await _context.Categories.Select(category => new Category()
+            var categories = await _context.Categories.Include(sub => sub.Subcategories).Select(category => new Category()
             {
                 Id = category.Id,
                 Name = category.Name,
+                Subcategories = category.Subcategories.Select(s => new Subcategory
+                {
+                    Id=s.Id,
+                    Name = s.Name,
+                }).ToList()
             }).ToListAsync();
 
             if(categories == null || categories.Count == 0)

@@ -182,6 +182,23 @@ namespace Goldrax.Repositories.Authentication
             return new Response<object> ( true, $"Reset password token send to {user.Email}" );
 
         }
+        public async Task<Response<object>> UpdateUserAsync(ApplicationUser user)
+        {
+            var exUser = await _userManager.FindByIdAsync(user.Id);
+            if (exUser == null) return new Response<object>(false, "User not found");
+            if(user.FullName != string.Empty) exUser.FullName = user.FullName;
+            if (user.Address!=string.Empty) exUser.Address = user.Address;
+            if (user.PhoneNumber != string.Empty) exUser.PhoneNumber = user.PhoneNumber;
+            if (user.City != string.Empty) exUser.City = user.City;
+            if (user.Country != string.Empty) exUser.Country = user.Country;
+            if (user.PostalCode != string.Empty) exUser.PostalCode = user.PostalCode;
+
+            exUser.LastUpdatedAt = DateTime.UtcNow;
+
+            var res = await _userManager.UpdateAsync(exUser);
+            if (res == null) return new Response<object>(false, "Updated Failed");
+            return new Response<object>(true, "Updated success");
+        }
 
 
 
